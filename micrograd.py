@@ -22,15 +22,38 @@ class Value:
 
     def __add__(self, other: Value | int | float) -> Value:
         other = other if isinstance(other, Value) else Value(other)
-        return Value(n=self.data + other.data, _children=(self, other), _label="+")
+        out = Value(n=self.data + other.data, _children=(self, other), _label="+")
+
+        def _backward():
+            self.grad += out.grad
+            other.grad += out.grad
+
+        out._backward = _backward
+
+        return out
 
     def __mul__(self, other: Value | int | float) -> Value:
         other = other if isinstance(other, Value) else Value(other, _label="")
-        return Value(n=self.data * other.data, _children=(self, other), _label="*")
+        out = Value(n=self.data * other.data, _children=(self, other), _label="*")
+
+        def _backward():
+            self.grad += other.data * out.grad
+            other.grad += self.data * out.grad
+
+        out._backward = _backward
+
+        return out
 
     def tanh(self) -> Value:
         t = (exp(self.data) - exp(-self.data)) / (exp(self.data) + exp(-self.data))
-        return Value(n=t, _children=(self,), _label="tanh")
+        out = Value(n=t, _children=(self,), _label="tanh")
+
+        def _backward():
+            self.grad += (1 - out.data**2) * out.grad
+
+        out._backward = _backward
+
+        return out
 
     @override
     def __repr__(self) -> str:

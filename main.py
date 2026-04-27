@@ -11,10 +11,17 @@ def main():
     x1w1 = x1 * w1
     x2w2 = x2 * w2
 
-    r = x1w1 + x2w2 + b
+    x1w1x2w2 = x1w1 + x2w2
+    r = x1w1x2w2 + b
     o = r.tanh()
 
     print(o)
+
+    o.grad = 1
+    o._backward()
+    print(o.grad)
+    r._backward()
+    print(r.grad)
 
 
 if __name__ == "__main__":
