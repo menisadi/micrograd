@@ -2,10 +2,10 @@ from micrograd import Value
 
 
 def main():
-    x1 = Value(0.3)
-    x2 = Value(0.2)
-    w1 = Value(0.5)
-    w2 = Value(0.4)
+    x1 = Value(0.3, label="x1")
+    x2 = Value(0.2, label="x2")
+    w1 = Value(0.5, label="w1")
+    w2 = Value(-0.4, label="w2")
     b = 1
 
     x1w1 = x1 * w1
@@ -19,9 +19,10 @@ def main():
 
     o.grad = 1
     o._backward()
-    print(o.grad)
     r._backward()
-    print(r.grad)
+    x1w1x2w2._backward()
+    x2w2._backward()
+    x1w1._backward()
 
     o.print_graph()
 

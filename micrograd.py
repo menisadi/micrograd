@@ -6,23 +6,25 @@ from math import exp
 class Value:
     data: int | float
     grad: int | float
-    _label: str | None
+    label: str
+    _op: str
     _children: set[Value]
     _backward: Callable[[], None]
 
     def __init__(
-        self, n: int | float, _children: Iterable[Value] = (), _label: str | None = ""
+        self, n: int | float, _children: Iterable[Value] = (), _op: str = "", label: str = ""
     ) -> None:
         self.data = n
         self.grad = 0
 
-        self._label = _label
+        self.label = label
+        self._op = _op
         self._children = set(_children)
         self._backward = lambda: None
 
     def __add__(self, other: Value | int | float) -> Value:
         other = other if isinstance(other, Value) else Value(other)
-        out = Value(n=self.data + other.data, _children=(self, other), _label="+")
+        out = Value(n=self.data + other.data, _children=(self, other), _op="+")
 
         def _backward():
             self.grad += out.grad
@@ -33,8 +35,8 @@ class Value:
         return out
 
     def __mul__(self, other: Value | int | float) -> Value:
-        other = other if isinstance(other, Value) else Value(other, _label="")
-        out = Value(n=self.data * other.data, _children=(self, other), _label="*")
+        other = other if isinstance(other, Value) else Value(other)
+        out = Value(n=self.data * other.data, _children=(self, other), _op="*")
 
         def _backward():
             self.grad += other.data * out.grad
@@ -46,7 +48,7 @@ class Value:
 
     def tanh(self) -> Value:
         t = (exp(self.data) - exp(-self.data)) / (exp(self.data) + exp(-self.data))
-        out = Value(n=t, _children=(self,), _label="tanh")
+        out = Value(n=t, _children=(self,), _op="tanh")
 
         def _backward():
             self.grad += (1 - out.data**2) * out.grad
@@ -56,11 +58,14 @@ class Value:
         return out
 
     def print_graph(self, indent: int = 0) -> None:
-        label = self._label or "val"
-        print(f"{'  ' * indent}{label}: {self.data:.4f} (grad={self.grad:.4f})")
+        name = self.label or self._op or "val"
+        # If case a compound value is also given a label:
+        op_str = f" ({self._op})" if self.label and self._op else ""
+        print(f"{'  ' * indent}{name}{op_str}: {self.data:.4f} (grad={self.grad:.4f})")
         for child in self._children:
             child.print_graph(indent + 1)
 
     @override
     def __repr__(self) -> str:
-        return f"Value({self.data}, {self._label})"
+        name = self.label or self._op or "val"
+        return f"Value({self.data}, label={name})"
