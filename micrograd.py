@@ -57,6 +57,28 @@ class Value:
 
         return out
 
+
+    def _topo_sort(self) -> list[Value]:
+        visited: set[Value] = set()
+        topo_result: list[Value] = []
+        
+        def dfs(node: Value):
+            if node in visited:
+                return
+            visited.add(node)
+            for prev in node._children:
+                dfs(prev)
+            topo_result.append(node)
+
+        dfs(self)
+        return list(reversed(topo_result))
+
+    def backward(self) -> None:
+        grad_order = self._topo_sort()
+        self.grad = 1
+        for node in grad_order:
+            node._backward()
+
     def print_graph(self, indent: int = 0) -> None:
         name = self.label or self._op or "val"
         # If case a compound value is also given a label:
@@ -69,3 +91,5 @@ class Value:
     def __repr__(self) -> str:
         name = self.label or self._op or "val"
         return f"Value({self.data}, label={name})"
+
+

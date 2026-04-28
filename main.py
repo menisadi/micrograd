@@ -17,15 +17,18 @@ def main():
 
     print(o)
 
-    o.grad = 1
-    o._backward()
-    r._backward()
-    x1w1x2w2._backward()
-    x2w2._backward()
-    x1w1._backward()
+    # o.grad = 1
+    # o._backward()
+    # r._backward()
+    # x1w1x2w2._backward()
+    # x2w2._backward()
+    # x1w1._backward()
 
+    o.backward()
     o.print_graph()
 
+    sorted_graph = o._topo_sort()
+    print(list(sorted_graph))
 
 if __name__ == "__main__":
     main()
