@@ -9,26 +9,19 @@ def main():
     b = 1
 
     x1w1 = x1 * w1
+    x1w1.label = "x1w1"
     x2w2 = x2 * w2
+    x2w2.label = "x2w2"
 
     x1w1x2w2 = x1w1 + x2w2
+    x1w1x2w2.label = "x1w1x2w2"
     r = x1w1x2w2 + b
+    r.label = "r"
     o = r.tanh()
-
-    print(o)
-
-    # o.grad = 1
-    # o._backward()
-    # r._backward()
-    # x1w1x2w2._backward()
-    # x2w2._backward()
-    # x1w1._backward()
+    o.label = "o"
 
     o.backward()
     o.print_graph()
-
-    sorted_graph = o._topo_sort()
-    print(list(sorted_graph))
 
 if __name__ == "__main__":
     main()
