@@ -12,7 +12,11 @@ class Value:
     _backward: Callable[[], None]
 
     def __init__(
-        self, n: int | float, _children: Iterable[Value] = (), _op: str = "", label: str = ""
+        self,
+        n: int | float,
+        _children: Iterable[Value] = (),
+        _op: str = "",
+        label: str = "",
     ) -> None:
         self.data = n
         self.grad = 0
@@ -57,11 +61,10 @@ class Value:
 
         return out
 
-
     def _topo_sort(self) -> list[Value]:
         visited: set[Value] = set()
         topo_result: list[Value] = []
-        
+
         def dfs(node: Value):
             if node in visited:
                 return
@@ -83,7 +86,7 @@ class Value:
         name = self.label or self._op or "val"
         # If case a compound value is also given a label:
         op_str = f" ({self._op})" if self.label and self._op else ""
-        print(f"{'  ' * indent}{name}{op_str}: {self.data:.4f} (grad={self.grad:.4f})")
+        print(f"{'│ ' * indent}{name}{op_str}: {self.data:.4f} (grad={self.grad:.4f})")
         for child in self._children:
             child.print_graph(indent + 1)
 
@@ -91,5 +94,3 @@ class Value:
     def __repr__(self) -> str:
         name = self.label or self._op or "val"
         return f"Value({self.data}, label={name})"
-
-
