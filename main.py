@@ -23,6 +23,8 @@ def main():
     r._backward()
     print(r.grad)
 
+    o.print_graph()
+
 
 if __name__ == "__main__":
     main()

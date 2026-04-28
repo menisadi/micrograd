@@ -55,6 +55,12 @@ class Value:
 
         return out
 
+    def print_graph(self, indent: int = 0) -> None:
+        label = self._label or "val"
+        print(f"{'  ' * indent}{label}: {self.data:.4f} (grad={self.grad:.4f})")
+        for child in self._children:
+            child.print_graph(indent + 1)
+
     @override
     def __repr__(self) -> str:
         return f"Value({self.data}, {self._label})"
