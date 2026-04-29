@@ -38,6 +38,9 @@ class Value:
 
         return out
 
+    def __radd__(self, other: Value | int | float) -> Value:
+        return self.__add__(other)
+
     def __mul__(self, other: Value | int | float) -> Value:
         other = other if isinstance(other, Value) else Value(other)
         out = Value(n=self.data * other.data, _children=(self, other), _op="*")
@@ -49,6 +52,9 @@ class Value:
         out._backward = _backward
 
         return out
+
+    def __rmul__(self, other: Value | int | float) -> Value:
+        return self.__mul__(other)
 
     def tanh(self) -> Value:
         t = (exp(self.data) - exp(-self.data)) / (exp(self.data) + exp(-self.data))
