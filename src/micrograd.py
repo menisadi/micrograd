@@ -99,4 +99,4 @@ class Value:
     @override
     def __repr__(self) -> str:
         name = self.label or self._op or "val"
-        return f"Value({self.data}, label={name})"
+        return f"Value({self.data}, name={name})"

@@ -1,0 +1,34 @@
+from src.micrograd import Value
+from random import uniform
+
+class Neuron:
+    _weights: list[Value]
+    _bias: Value
+
+    def __init__(self, size: int) -> None:
+        self._weights = [Value(uniform(-1, 1)) for _ in range(size)]
+        self._bias = Value(uniform(-1, 1))
+        
+
+    def __call__(self, inputs: list[Value]) -> Value:
+        dot_prod = sum([x * w for x, w  in zip(self._weights, inputs)], self._bias)
+        return dot_prod.tanh()
+
+    def parameters(self) -> list[Value]:
+        return self._weights + [self._bias]
+
+class Layer:
+    _nodes: list[Neuron]
+    def __init__(self, input_size: int, output_size: int) -> None:
+        self._nodes = [Neuron(input_size) for _ in range(output_size)]
+
+    def __call__(self, inputs: list[Value]) -> list[Value]:
+        out = [n(inputs) for n in self._nodes]
+        return out
+
+    def parameters(self) -> list[Value]:
+        return [p for n in self._nodes for p in n.parameters()]
+
+class MLP:
+    def __init__(self) -> None:
+        pass
