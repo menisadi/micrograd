@@ -30,5 +30,14 @@ class Layer:
         return [p for n in self._nodes for p in n.parameters()]
 
 class MLP:
-    def __init__(self) -> None:
-        pass
+    _layers: list[Layer]
+    def __init__(self, layers_sizes: list[int]) -> None:
+        self._layers = [Layer(nin, nout) for nin, nout in zip(layers_sizes, layers_sizes[1:])]
+
+    def __call__(self, inputs: list[Value]) -> list[Value]:
+        for l in self._layers:
+            inputs = l(inputs)
+        return inputs
+
+    def parameters(self) -> list[Value]:
+        return [p for l in self._layers for p in l.parameters()]

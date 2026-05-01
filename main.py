@@ -1,7 +1,7 @@
 from micrograd import Value
 
 
-def main():
+def value_example():
     x1 = Value(0.3, label="x1")
     x2 = Value(0.2, label="x2")
     w1 = Value(0.5, label="w1")
@@ -23,5 +23,8 @@ def main():
     o.backward()
     o.print_graph()
 
+def full_example():
+    pass
+
 if __name__ == "__main__":
-    main()
+    full_example()
