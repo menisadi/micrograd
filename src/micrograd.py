@@ -56,6 +56,16 @@ class Value:
     def __rmul__(self, other: Value | int | float) -> Value:
         return self.__mul__(other)
 
+    def __pow__(self, expo: int | float) -> Value:
+        out = Value(n=self.data ** expo, _children=(self, ), _op="^")
+
+        def _backward():
+            self.grad += expo * self.data ** (expo - 1) * out.grad
+
+        out._backward = _backward
+
+        return out
+
     def tanh(self) -> Value:
         t = (exp(self.data) - exp(-self.data)) / (exp(self.data) + exp(-self.data))
         out = Value(n=t, _children=(self,), _op="tanh")
