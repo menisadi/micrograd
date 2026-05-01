@@ -41,6 +41,15 @@ class Value:
     def __radd__(self, other: Value | int | float) -> Value:
         return self.__add__(other)
 
+    def __neg__(self) -> Value:
+        return self * -1
+
+    def __sub__(self, other: Value | int | float) -> Value:
+        return self + (-other)
+
+    def __rsub__(self, other: Value | int | float) -> Value:
+        return (-self) + other
+
     def __mul__(self, other: Value | int | float) -> Value:
         other = other if isinstance(other, Value) else Value(other)
         out = Value(n=self.data * other.data, _children=(self, other), _op="*")
