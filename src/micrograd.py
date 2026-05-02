@@ -66,7 +66,7 @@ class Value:
         return self.__mul__(other)
 
     def __pow__(self, expo: int | float) -> Value:
-        out = Value(n=self.data ** expo, _children=(self, ), _op="^")
+        out = Value(n=self.data**expo, _children=(self,), _op="^")
 
         def _backward():
             self.grad += expo * self.data ** (expo - 1) * out.grad
