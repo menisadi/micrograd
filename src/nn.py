@@ -1,6 +1,7 @@
 from src.micrograd import Value
 from random import uniform
 
+
 class Neuron:
     _weights: list[Value]
     _bias: Value
@@ -8,17 +9,18 @@ class Neuron:
     def __init__(self, size: int) -> None:
         self._weights = [Value(uniform(-1, 1)) for _ in range(size)]
         self._bias = Value(uniform(-1, 1))
-        
 
     def __call__(self, inputs: list[Value]) -> Value:
-        dot_prod = sum([x * w for x, w  in zip(self._weights, inputs)], self._bias)
+        dot_prod = sum([x * w for x, w in zip(self._weights, inputs)], self._bias)
         return dot_prod.tanh()
 
     def parameters(self) -> list[Value]:
         return self._weights + [self._bias]
 
+
 class Layer:
     _nodes: list[Neuron]
+
     def __init__(self, input_size: int, output_size: int) -> None:
         self._nodes = [Neuron(input_size) for _ in range(output_size)]
 
@@ -29,15 +31,23 @@ class Layer:
     def parameters(self) -> list[Value]:
         return [p for n in self._nodes for p in n.parameters()]
 
+
 class MLP:
     _layers: list[Layer]
+
     def __init__(self, layers_sizes: list[int]) -> None:
-        self._layers = [Layer(nin, nout) for nin, nout in zip(layers_sizes, layers_sizes[1:])]
+        self._layers = [
+            Layer(nin, nout) for nin, nout in zip(layers_sizes, layers_sizes[1:])
+        ]
 
     def __call__(self, inputs: list[Value]) -> list[Value]:
-        for l in self._layers:
-            inputs = l(inputs)
+        for lay in self._layers:
+            inputs = lay(inputs)
         return inputs
 
     def parameters(self) -> list[Value]:
-        return [p for l in self._layers for p in l.parameters()]
+        return [p for lay in self._layers for p in lay.parameters()]
+
+
+def quad_loss(ytrue: list[Value], ypred: list[Value]) -> Value:
+    return sum([(yt - yp) ** 2 for yt, yp in zip(ytrue, ypred)], Value(0))
