@@ -1,4 +1,5 @@
-from micrograd import Value
+from src.micrograd import Value
+from src.nn import MLP, quad_loss
 
 
 def value_example():
@@ -23,8 +24,30 @@ def value_example():
     o.backward()
     o.print_graph()
 
+
 def full_example():
-    pass
+    xs = [
+        [Value(0.0), Value(0.0)], 
+        [Value(1.0), Value(0.0)], 
+        [Value(0.0), Value(1.0)], 
+        [Value(1.0), Value(1.0)], 
+    ]
+    ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
+    mlp = MLP([2, 4, 1])
+    step = 0.1
+    iterations = 1000
+    for _ in range(iterations):
+        ypred = [mlp(inpt)[0] for inpt in xs]
+        loss = quad_loss(ys, ypred)
+        loss.backward()
+        for p in  mlp.parameters():
+            p.data -= p.grad * step
+            p.grad = 0
+    ypred = [mlp(inpt)[0] for inpt in xs]
+    loss = quad_loss(ys, ypred)
+    print(loss.data)
+    print(f"True: {ys}")
+    print(f"Predictions: {ypred}")
 
 if __name__ == "__main__":
     full_example()
