@@ -1,5 +1,6 @@
 from src.micrograd import Value
 from src.nn import MLP, quad_loss
+from collections.abc import Callable
 
 
 def value_example():
@@ -25,29 +26,41 @@ def value_example():
     o.print_graph()
 
 
-def full_example():
-    xs = [
-        [Value(0.0), Value(0.0)], 
-        [Value(1.0), Value(0.0)], 
-        [Value(0.0), Value(1.0)], 
-        [Value(1.0), Value(1.0)], 
-    ]
-    ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
-    mlp = MLP([2, 4, 1])
-    step = 0.1
-    iterations = 1000
+def train(
+    xs: list[list[Value]],
+    ys: list[Value],
+    mlp: MLP,
+    step: float,
+    loss: Callable[[list[Value], list[Value]], Value],
+    iterations: int,
+):
     for _ in range(iterations):
         ypred = [mlp(inpt)[0] for inpt in xs]
-        loss = quad_loss(ys, ypred)
-        loss.backward()
-        for p in  mlp.parameters():
+        losses = quad_loss(ys, ypred)
+        losses.backward()
+        for p in mlp.parameters():
             p.data -= p.grad * step
             p.grad = 0
     ypred = [mlp(inpt)[0] for inpt in xs]
-    loss = quad_loss(ys, ypred)
-    print(loss.data)
+    losses = loss(ys, ypred)
+    return ypred, losses
+
+
+def full_example():
+    xs = [
+        [Value(0.0), Value(0.0)],
+        [Value(1.0), Value(0.0)],
+        [Value(0.0), Value(1.0)],
+        [Value(1.0), Value(1.0)],
+    ]
+    ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
+    mlp = MLP([2, 4, 1])
+
+    ypred, losses = train(xs, ys, mlp=mlp, step=0.1, loss=quad_loss, iterations=1000)
+    print(losses.data)
     print(f"True: {ys}")
     print(f"Predictions: {ypred}")
+
 
 if __name__ == "__main__":
     full_example()
