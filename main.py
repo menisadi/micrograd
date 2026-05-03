@@ -35,15 +35,20 @@ def train(
     step: float,
     loss: Callable[[list[Value], list[Value]], Value],
     iterations: int,
+    decay: bool = False,
 ) -> tuple[list[Value], list[float | int]]:
     losses: list[float | int] = []
-    for _ in tqdm(range(iterations)):
+    learning_rate = step
+    for i in tqdm(range(iterations)):
+        if decay:
+            learning_rate = step * (1 - i / iterations)
         ypred = [mlp(inpt)[0] for inpt in xs]
         current_loss = quad_loss(ys, ypred)
         current_loss.backward()
+        # tqdm.write(f"Loss: {current_loss.data:.4f} | Rate: {learning_rate:.4f}")
         losses.append(current_loss.data)
         for p in mlp.parameters():
-            p.data -= p.grad * step
+            p.data -= p.grad * learning_rate
             p.grad = 0
     ypred = [mlp(inpt)[0] for inpt in xs]
     current_loss = loss(ys, ypred)
@@ -60,7 +65,9 @@ def full_example():
     ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
     mlp = MLP([2, 4, 1])
 
-    ypred, losses = train(xs, ys, mlp=mlp, step=0.02, loss=quad_loss, iterations=10000)
+    ypred, losses = train(
+        xs, ys, mlp=mlp, step=0.1, loss=quad_loss, iterations=2000, decay=True
+    )
     print(losses[-1])
     print(f"True: {ys}")
     print(f"Predictions: {ypred}")
