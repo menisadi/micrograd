@@ -43,7 +43,7 @@ def train(
         if decay:
             learning_rate = step * (1 - i / iterations)
         ypred = [mlp(inpt)[0] for inpt in xs]
-        current_loss = quad_loss(ys, ypred)
+        current_loss = loss(ys, ypred)
         current_loss.backward()
         # tqdm.write(f"Loss: {current_loss.data:.4f} | Rate: {learning_rate:.4f}")
         losses.append(current_loss.data)
@@ -63,7 +63,7 @@ def full_example():
         [Value(1.0), Value(1.0)],
     ]
     ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
-    mlp = MLP([2, 4, 1], activation="relu")
+    mlp = MLP([2, 4, 1], activation="tanh")
 
     ypred, losses = train(
         xs, ys, mlp=mlp, step=0.1, loss=quad_loss, iterations=2000, decay=True
