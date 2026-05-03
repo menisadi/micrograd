@@ -73,7 +73,7 @@ def quad_loss(ytrue: list[Value], ypred: list[Value]) -> Value:
 def binary_cross_entropy(ytrue: list[Value], ypred: list[Value]) -> Value:
     return sum(
         [
-            -yt * yp.sigmoid().log() - (1 - yt) * (1 - yp).sigmoid().log()
+            -yt * yp.sigmoid().log() - (1 - yt) * (1 - yp.sigmoid()).log()
             for yt, yp in zip(ytrue, ypred)
         ],
         Value(0),
