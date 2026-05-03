@@ -1,6 +1,6 @@
 from collections.abc import Callable, Iterable
 from typing import override
-from math import exp
+from math import exp, log
 
 
 class Value:
@@ -70,6 +70,18 @@ class Value:
 
         def _backward():
             self.grad += expo * self.data ** (expo - 1) * out.grad
+
+        out._backward = _backward
+
+        return out
+
+    def log(self) -> Value:
+        if self.data <= 0:
+            raise ValueError("expected a positive input")
+        out = Value(n=log(self.data), _children=(self,), _op="log")
+
+        def _backward():
+            self.grad += (1 / self.data) * out.grad
 
         out._backward = _backward
 
