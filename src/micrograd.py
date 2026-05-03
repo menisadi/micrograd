@@ -86,6 +86,18 @@ class Value:
 
         return out
 
+    def relu(self) -> Value:
+        r = max(0, self.data)
+        out = Value(n=r, _children=(self,), _op="relu")
+
+        def _backward():
+            relu_grad = 0 if out.data == 0 else 1
+            self.grad += relu_grad * out.grad
+
+        out._backward = _backward
+
+        return out
+
     def _topo_sort(self) -> list[Value]:
         visited: set[Value] = set()
         topo_result: list[Value] = []

@@ -5,14 +5,20 @@ from random import uniform
 class Neuron:
     _weights: list[Value]
     _bias: Value
+    _activation: str | None
 
-    def __init__(self, size: int) -> None:
+    def __init__(self, size: int, activation: str | None = "tanh") -> None:
         self._weights = [Value(uniform(-1, 1)) for _ in range(size)]
         self._bias = Value(uniform(-1, 1))
+        self._activation = activation
 
     def __call__(self, inputs: list[Value]) -> Value:
         dot_prod = sum([x * w for x, w in zip(self._weights, inputs)], self._bias)
-        return dot_prod.tanh()
+        if self._activation == "relu":
+            activated = dot_prod.relu()
+        else:
+            activated = dot_prod.tanh()
+        return activated
 
     def parameters(self) -> list[Value]:
         return self._weights + [self._bias]
@@ -21,8 +27,8 @@ class Neuron:
 class Layer:
     _nodes: list[Neuron]
 
-    def __init__(self, input_size: int, output_size: int) -> None:
-        self._nodes = [Neuron(input_size) for _ in range(output_size)]
+    def __init__(self, input_size: int, output_size: int, activation: str | None = "tanh") -> None:
+        self._nodes = [Neuron(input_size, activation=activation) for _ in range(output_size)]
 
     def __call__(self, inputs: list[Value]) -> list[Value]:
         out = [n(inputs) for n in self._nodes]
@@ -35,9 +41,9 @@ class Layer:
 class MLP:
     _layers: list[Layer]
 
-    def __init__(self, layers_sizes: list[int]) -> None:
+    def __init__(self, layers_sizes: list[int], activation: str | None = "tanh") -> None:
         self._layers = [
-            Layer(nin, nout) for nin, nout in zip(layers_sizes, layers_sizes[1:])
+            Layer(nin, nout, activation) for nin, nout in zip(layers_sizes, layers_sizes[1:])
         ]
 
     def __call__(self, inputs: list[Value]) -> list[Value]:

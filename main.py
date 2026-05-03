@@ -63,7 +63,7 @@ def full_example():
         [Value(1.0), Value(1.0)],
     ]
     ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
-    mlp = MLP([2, 4, 1])
+    mlp = MLP([2, 4, 1], activation="relu")
 
     ypred, losses = train(
         xs, ys, mlp=mlp, step=0.1, loss=quad_loss, iterations=2000, decay=True
@@ -72,7 +72,7 @@ def full_example():
     print(f"True: {ys}")
     print(f"Predictions: {ypred}")
     _ = plt.plot(range(len(losses)), losses)
-    plt.show()
+    # plt.show()
 
 
 if __name__ == "__main__":
