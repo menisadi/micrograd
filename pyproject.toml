@@ -8,7 +8,9 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "matplotlib>=3.10.9",
     "pytest>=9.0.3",
+    "tqdm>=4.67.3",
     "ty>=0.0.32",
 ]
 
