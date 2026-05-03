@@ -1,5 +1,5 @@
 from src.micrograd import Value
-from src.nn import MLP, quad_loss
+from src.nn import MLP, binary_cross_entropy, quad_loss
 from collections.abc import Callable
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -62,6 +62,24 @@ def full_example():
         [Value(0.0), Value(1.0)],
         [Value(1.0), Value(1.0)],
     ]
+    ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
+    mlp = MLP([2, 4, 1], activation="sigmoid")
+
+    ypred, losses = train(
+        xs,
+        ys,
+        mlp=mlp,
+        step=3.0,
+        loss=binary_cross_entropy,
+        iterations=2000,
+        decay=True,
+    )
+    print(losses[-1])
+    print(f"True: {ys}")
+    print(f"Predictions: {ypred}")
+    _ = plt.plot(range(len(losses)), losses)
+    # plt.show()
+
     ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
     mlp = MLP([2, 4, 1], activation="tanh")
 

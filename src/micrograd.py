@@ -75,6 +75,16 @@ class Value:
 
         return out
 
+    def exp(self) -> Value:
+        out = Value(n=exp(self.data), _children=(self,), _op="exp")
+
+        def _backward():
+            self.grad += out.data * out.grad
+
+        out._backward = _backward
+
+        return out
+
     def log(self) -> Value:
         if self.data <= 0:
             raise ValueError("expected a positive input")
@@ -97,6 +107,9 @@ class Value:
         out._backward = _backward
 
         return out
+
+    def sigmoid(self) -> Value:
+        return (1 + (-self).exp()) ** (-1)
 
     def relu(self) -> Value:
         r = max(0, self.data)
