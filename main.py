@@ -2,7 +2,6 @@ from src.micrograd import Value
 from src.nn import MLP, binary_cross_entropy, quad_loss
 from collections.abc import Callable
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 
 
 def value_example():
@@ -63,7 +62,8 @@ def full_example():
         [Value(1.0), Value(1.0)],
     ]
     ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
-    mlp = MLP([2, 4, 1], activation="sigmoid")
+    activ = "sigmoid"
+    mlp = MLP([2, 4, 1], activation=activ)
 
     ypred, losses = train(
         xs,
@@ -71,25 +71,28 @@ def full_example():
         mlp=mlp,
         step=3.0,
         loss=binary_cross_entropy,
-        iterations=2000,
+        iterations=3000,
         decay=True,
     )
+    print(f"Activation: {activ}")
     print(losses[-1])
-    print(f"True: {ys}")
-    print(f"Predictions: {ypred}")
-    _ = plt.plot(range(len(losses)), losses)
+    # print(f"True: {ys}")
+    # print(f"Predictions: {ypred}")
+    # _ = plt.plot(range(len(losses)), losses)
     # plt.show()
 
     ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
-    mlp = MLP([2, 4, 1], activation="tanh")
+    activ = "tanh"
+    mlp = MLP([2, 4, 1], activation=activ)
 
     ypred, losses = train(
         xs, ys, mlp=mlp, step=0.1, loss=quad_loss, iterations=2000, decay=True
     )
+    print(f"Activation: {activ}")
     print(losses[-1])
-    print(f"True: {ys}")
-    print(f"Predictions: {ypred}")
-    _ = plt.plot(range(len(losses)), losses)
+    # print(f"True: {ys}")
+    # print(f"Predictions: {ypred}")
+    # _ = plt.plot(range(len(losses)), losses)
     # plt.show()
 
 
