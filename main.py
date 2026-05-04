@@ -1,5 +1,6 @@
 from src.micrograd import Value
 from src.nn import MLP, binary_cross_entropy, quad_loss
+from src.examples import xor, or_gate
 from collections.abc import Callable
 from tqdm import tqdm
 
@@ -55,45 +56,35 @@ def train(
 
 
 def full_example():
-    xs = [
-        [Value(0.0), Value(0.0)],
-        [Value(1.0), Value(0.0)],
-        [Value(0.0), Value(1.0)],
-        [Value(1.0), Value(1.0)],
-    ]
-    ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
+    xs, ys = or_gate()
     activ = "sigmoid"
     mlp = MLP([2, 4, 1], activation=activ)
 
-    ypred, losses = train(
+    ypred1, losses = train(
         xs,
         ys,
         mlp=mlp,
-        step=3.0,
+        step=0.1,
         loss=binary_cross_entropy,
-        iterations=3000,
+        iterations=2000,
         decay=True,
     )
     print(f"Activation: {activ}")
     print(losses[-1])
-    # print(f"True: {ys}")
-    # print(f"Predictions: {ypred}")
-    # _ = plt.plot(range(len(losses)), losses)
-    # plt.show()
 
-    ys = [Value(0.0), Value(1.0), Value(1.0), Value(0.0)]
+    xs, ys = xor()
     activ = "tanh"
     mlp = MLP([2, 4, 1], activation=activ)
 
-    ypred, losses = train(
+    ypred2, losses = train(
         xs, ys, mlp=mlp, step=0.1, loss=quad_loss, iterations=2000, decay=True
     )
     print(f"Activation: {activ}")
     print(losses[-1])
-    # print(f"True: {ys}")
-    # print(f"Predictions: {ypred}")
-    # _ = plt.plot(range(len(losses)), losses)
-    # plt.show()
+
+    print("------")
+    print(", ".join([f"{y.sigmoid().data:.4f}" for y in ypred1]))
+    print(", ".join([f"{y.data:.4f}" for y in ypred2]))
 
 
 if __name__ == "__main__":
